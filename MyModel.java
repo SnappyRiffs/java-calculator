@@ -1,60 +1,97 @@
 public class MyModel {
     public String historyExpression = "";   // History panel
     public String entryExpression = "";     // Entry panel
-    public String lastOperator = "";        // Last operator pressed
-    public double lastOperand = 0;          // Last operand used
-    public double lastResult = 0;           // Last calculated result
+
+    private double leftOperand = 0;         // Stored left operand
+    private String operator = "";           // Stored operator
+    private double lastRightOperand = 0;   // Last right operand (for repeated =)
+    public boolean justCalculated = false; // Flag if last action was equal
+	public boolean newEntry = false; // true when the next number should start a new entry
 
     public void clearExpressions() {
         historyExpression = "";
         entryExpression = "";
-        lastOperator = "";
-        lastOperand = 0;
-        lastResult = 0;
+        leftOperand = 0;
+        operator = "";
+        lastRightOperand = 0;
+        justCalculated = false;
     }
 
-    // Helper method to compute an operation
-    private double compute(double left, String op, double right) {
-        switch (op) {
-            case "+": return left + right;
-            case "-": return left - right;
-            case "*": return left * right;
-            case "/": return left / right;
-            case "%": return left % right;
-            case "^": return Math.pow(left, right);
+    public void setOperator(String op) {
+		if (!entryExpression.isEmpty()) {
+			leftOperand = Double.parseDouble(entryExpression);
+		}
+		operator = op;
+		historyExpression = entryExpression + " " + operator + " ";
+		newEntry = true;  // next number replaces entry
+		justCalculated = false;
+	}	
+
+    public void inputNumber(String number) {
+        if (justCalculated || newEntry) {
+            // After equal, new number replaces entry
+            entryExpression = number;
+            justCalculated = false;
+        } else {
+            entryExpression += number;
         }
-        return right;
     }
 
-    // Main calculation method
     public void calculate() {
-        try {
-            double currentNumber = entryExpression.isEmpty() ? 0 : Double.parseDouble(entryExpression);
-
-            if (!lastOperator.isEmpty() && historyExpression.endsWith("=")) {
-                // Repeat last operation (Rule 2)
-                lastResult = compute(lastResult, lastOperator, lastOperand);
-                entryExpression = String.valueOf(lastResult);
-                historyExpression += lastOperator + lastOperand + "=";
-                return;
-            }
-
-            String[] tokens = historyExpression.trim().split(" ");
-            if (tokens.length >= 2) {
-                double left = Double.parseDouble(tokens[tokens.length - 2]);
-                String op = tokens[tokens.length - 1];
-
-                lastOperator = op;
-                lastOperand = currentNumber;
-                lastResult = compute(left, op, currentNumber);
-
-                entryExpression = String.valueOf(lastResult);
-            } else {
-                // Single number, just store it as lastResult
-                lastResult = currentNumber;
-            }
-        } catch (Exception e) {
-            entryExpression = "ERROR";
-        }
-    }
+		try {
+			double rightOperand;
+	
+			// If entry is empty or invalid, use last right operand
+			if (justCalculated) {
+				rightOperand = lastRightOperand;
+			} else if (entryExpression.isEmpty()) {
+				rightOperand = leftOperand; // use left as right if nothing entered
+				lastRightOperand = rightOperand;
+			} else {
+				rightOperand = Double.parseDouble(entryExpression);
+				lastRightOperand = rightOperand;
+			}
+	
+			double result = 0;
+	
+			switch (operator) {
+				case "+": result = leftOperand + rightOperand; break;
+				case "-": result = leftOperand - rightOperand; break;
+				case "*": result = leftOperand * rightOperand; break;
+				case "/":
+					if (rightOperand == 0) {
+						entryExpression = "Can't divide by zero";
+						historyExpression = leftOperand + " / 0 =";
+						justCalculated = true;
+						newEntry = true;
+						return;
+					}
+					result = leftOperand / rightOperand;
+					break;
+				case "%":
+					if (rightOperand == 0) {
+						entryExpression = "Can't divide by zero";
+						historyExpression = leftOperand + " % 0 =";
+						justCalculated = true;
+						newEntry = true;
+						return;
+					}
+					result = leftOperand % rightOperand;
+					break;
+				case "^": result = Math.pow(leftOperand, rightOperand); break;
+				default: result = rightOperand; break;
+			}
+	
+			historyExpression = leftOperand + " " + operator + " " + rightOperand + " =";
+			entryExpression = String.valueOf(result);
+	
+			leftOperand = result;
+			justCalculated = true;
+			newEntry = true;
+	
+		} catch (NumberFormatException e) {
+			entryExpression = "ERROR";
+		}
+	}
+	// TODO: fix 0.0 n.0 =	
 }

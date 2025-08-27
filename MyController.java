@@ -1,5 +1,5 @@
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+//import java.awt.event.ActionEvent;
+//import java.awt.event.ActionListener;
 
 public class MyController {
     private MyModel model;
@@ -66,22 +66,35 @@ public class MyController {
 
         // --- Equal button ---
         view.equal.addActionListener(e -> {
-            if (!model.entryExpression.isEmpty()) {
-                model.historyExpression += " " + model.entryExpression + "=";
-            }
-            model.calculate();
-            lastActionWasEqual = true;
-            view.update();
-        });
+			try {
+				if (!model.entryExpression.isEmpty()) {
+					// Only append current entry and '=' if it hasn’t already been appended
+					if (!model.historyExpression.endsWith(" =")) {
+						model.historyExpression = model.historyExpression.trim() + " " + model.entryExpression + " =";
+					}
+				}
+		
+				// Calculate result
+				model.calculate();
+		
+				lastActionWasEqual = true;
+				view.update();
+		
+			} catch (Exception ex) {
+				model.entryExpression = "ERROR";
+				view.update();
+			}
+		});			
     }
 
     // Helper to attach numbers
     private void addNumberListener(final String digit, javax.swing.JButton button) {
 		button.addActionListener(e -> {
-			if (lastActionWasEqual) {
-				// Replace entry after equal, but keep history unchanged
+			if (model.justCalculated || model.newEntry) {
+				// Replace entry after equal or after operator
 				model.entryExpression = digit;
-				lastActionWasEqual = false;
+				model.justCalculated = false;
+				model.newEntry = false;
 			} else if (model.entryExpression.equals("0")) {
 				model.entryExpression = digit;
 			} else {
@@ -89,18 +102,13 @@ public class MyController {
 			}
 			view.update();
 		});
-	}		
+	}	
 
     // Helper to attach operators
     private void addOperationListener(final String operator, javax.swing.JButton button) {
 		button.addActionListener(e -> {
-			if (!model.entryExpression.isEmpty()) {
-				// If last action was equal or a number is pressed, start new operation
-				model.historyExpression = model.entryExpression + operator;
-				model.entryExpression = model.entryExpression; // entry remains the number
-				lastActionWasEqual = false;
-				view.update();
-			}
+			model.setOperator(operator);  // <-- call the new setOperator method
+			view.update();
 		});
-	}		
+	}			
 }
