@@ -16,8 +16,8 @@ public class MyModel {
 
 	public void calculate() {
 		String[] expression = historyExpression.trim().split(" "); // takes the result of historyExpression calculated
-																	// from MyController.java and converts it into an
-																	// array
+																	// from MyController.java and converts it into an array
+																	
 		System.out.println(Arrays.toString(expression));
 		double firstNumber = Double.parseDouble(expression[0]);
 		String operation = expression[1];

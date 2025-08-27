@@ -55,7 +55,7 @@ public class MyController {
 				if (!model.entryExpression.isEmpty()) {
 					model.historyExpression += " " + model.entryExpression;
 				}
-				model.entryExpression = "*"; // can also be model.entryExpression = "x";
+				model.entryExpression = "*"; // model.entryExpression = "x";
 				view.update();
 			}
 		});
@@ -67,7 +67,7 @@ public class MyController {
 				if (!model.entryExpression.isEmpty()) {
 					model.historyExpression += " " + model.entryExpression;
 				}
-				model.entryExpression = "/"; // can also be model.entryExpression = "DIV";
+				model.entryExpression = "/"; // model.entryExpression = "DIV";
 				view.update();
 			}
 		});
@@ -79,7 +79,7 @@ public class MyController {
 				if (!model.entryExpression.isEmpty()) {
 					model.historyExpression += " " + model.entryExpression;
 				}
-				model.entryExpression = "%"; // can also be model.entryExpression = "MOD";
+				model.entryExpression = "%"; // model.entryExpression = "MOD";
 				view.update();
 			}
 		});
@@ -91,7 +91,7 @@ public class MyController {
 				if (!model.entryExpression.isEmpty()) {
 					model.historyExpression += " " + model.entryExpression;
 				}
-				model.entryExpression = "^"; // can also be model.entryExpression = "pow";
+				model.entryExpression = "^"; // model.entryExpression = "pow";
 				view.update();
 			}
 		});
@@ -309,13 +309,20 @@ public class MyController {
 			public void actionPerformed(ActionEvent event) {
 				try {
 					if (!model.entryExpression.isEmpty()) {
-						model.historyExpression += " " + model.entryExpression;
+						model.historyExpression += " " + model.entryExpression + "=";
 					}
-					model.entryExpression = "=";
+					// Save the current entry so it stays visible
+					String currentEntry = model.entryExpression;
+
+					// Perform the calculation (update model as needed)
 					model.calculate();
+		
+					// Update view
 					view.update();
-					model.entryExpression = "";
-					view.update(); // how have I not added this before :D
+		
+					// Keep the entry panel showing the number instead of clearing it
+					model.entryExpression = currentEntry;
+					view.update();
 				} catch (Exception er) {
 					System.out.println("Error!");
 				}

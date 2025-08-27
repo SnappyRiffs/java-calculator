@@ -68,8 +68,6 @@ public class MyView {
 		mainPanel.setPreferredSize(new Dimension(330, 600));
 		mainPanel.setBackground(Color.WHITE);
 
-
-		// TODO: Make a method that simplifies this
 		historyPanel = new JPanel();
 		historyPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
 		historyPanel.setVisible(true);
@@ -141,6 +139,7 @@ public class MyView {
 		row1.add(multiply);
 		row1.add(divide);
 
+		// row2
 		JPanel row2 = new JPanel();
 		row2.setBackground(Color.WHITE);
 		row2.setVisible(true);
@@ -158,6 +157,7 @@ public class MyView {
 		row2.add(nine);
 		row2.add(mod);
 
+		// row3
 		JPanel row3 = new JPanel();
 		row3.setBackground(Color.WHITE);
 		row3.setVisible(true);
@@ -175,6 +175,7 @@ public class MyView {
 		row3.add(six);
 		row3.add(pow);
 
+		// row4
 		JPanel row4 = new JPanel();
 		row4.setBackground(Color.WHITE);
 		row4.setVisible(true);
@@ -192,6 +193,7 @@ public class MyView {
 		row4.add(three);
 		row4.add(clear);
 
+		// row5
 		JPanel row5 = new JPanel();
 		row5.setBackground(Color.WHITE);
 		row5.setVisible(true);
